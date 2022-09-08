@@ -22,11 +22,11 @@ function _G.confirm_quit()
 	if vim.fn.getcmdtype() == ":" and vim.fn.getcmdline() == "q" then
 		if is_last_window() and vim.fn.tabpagenr("$") == 1 then
 			if vim.fn.confirm("Do you want to quit?", "&Yes\n&No", 2) ~= 1 then
-				return false
+				return "false"
 			end
 		end
 	end
-	return true
+	return "true"
 end
 
 vim.cmd([[cnoreabbrev <expr> q (luaeval(v:lua.confirm_quit())) ? 'q' : '']])
