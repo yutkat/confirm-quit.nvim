@@ -25,38 +25,13 @@ function M.confirm_quit()
 	vim.cmd.quit()
 end
 
-function M.confirm_quit_cmdline()
-	if vim.fn.getcmdtype() == ":" and vim.fn.getcmdline() ~= "q" then
-		vim.cmd.quit()
-	end
-	M.confirm_quit()
-end
-
 local function setup_cmdline_quit()
 	if config.options.overwrite_q_command == true then
-		vim.cmd([[cnoreabbrev q lua require('confirm-quit').confirm_quit_cmdline()]])
+		vim.cmd([[cnoreabbrev <expr> q (getcmdtype() ==# ":" && getcmdline() ==# "q") ? "ConfirmQuit" : "q" ]])
+		vim.api.nvim_create_user_command("ConfirmQuit", function()
+			require("confirm-quit").confirm_quit()
+		end, { force = true })
 		vim.cmd([[cnoreabbrev qq  quit]])
-
-		vim.g.confirm_quit_isk_save = ""
-		local group_name = "confirm-quit"
-		vim.api.nvim_create_augroup(group_name, { clear = true })
-		vim.api.nvim_create_autocmd({ "CmdlineEnter" }, {
-			group = group_name,
-			pattern = ":",
-			callback = function()
-				vim.g.confirm_quit_isk_save = vim.bo.iskeyword
-				vim.opt_local.iskeyword:append("!")
-			end,
-			once = false,
-		})
-		vim.api.nvim_create_autocmd({ "CmdlineLeave" }, {
-			group = group_name,
-			pattern = ":",
-			callback = function()
-				vim.bo.iskeyword = vim.g.confirm_quit_isk_save
-			end,
-			once = false,
-		})
 	end
 end
 
