@@ -16,8 +16,22 @@ local function is_last_window()
 	return count == 1
 end
 
-function M.confirm_quit()
+local function user_wants_to_quit()
+	return vim.fn.confirm("Do you want to quit?", "&Yes\n&No", 2, "Question") == 1
+end
+
+function M.confirm_quit(quit_all)
 	local is_last_tab_page = vim.fn.tabpagenr("$") == 1
+
+	-- Lua doesn't short circuit with conditional logic
+	-- so the following code can't be refactored further
+	if quit_all then
+		if user_wants_to_quit() then
+			vim.cmd.quitall()
+		end
+
+		return
+	end
 
 	if not is_last_window() then
 		vim.cmd.quit()
@@ -28,7 +42,7 @@ function M.confirm_quit()
 		return
 	end
 
-	if vim.fn.confirm("Do you want to quit?", "&Yes\n&No", 2, "Question") == 1 then
+	if user_wants_to_quit() then
 		vim.cmd.quit()
 	end
 end
@@ -41,6 +55,10 @@ local function setup_cmdline_quit()
 
 	vim.api.nvim_create_user_command("ConfirmQuit", function()
 		require("confirm-quit").confirm_quit()
+	end, { force = true })
+
+	vim.api.nvim_create_user_command("ConfirmQuitAll", function()
+		require("confirm-quit").confirm_quit(true)
 	end, { force = true })
 end
 
