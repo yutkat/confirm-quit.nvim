@@ -11,10 +11,13 @@ function M.set(user_conf)
 		M.options = default_config
 		return default_config
 	end
+
 	if type(user_conf) ~= "table" then
 		error("Configuration error")
 	end
+
 	M.options = vim.tbl_deep_extend("force", default_config, user_conf or {})
+
 	return M.options
 end
 
