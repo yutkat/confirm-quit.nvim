@@ -20,30 +20,55 @@ local function user_wants_to_quit()
 	return vim.fn.confirm("Do you want to quit?", "&Yes\n&No", 2, "Question") == 1
 end
 
-function M.confirm_quit(quit_all)
-	local is_last_tab_page = vim.fn.tabpagenr("$") == 1
-
-	-- Lua doesn't short circuit with conditional logic
-	-- so the following code can't be refactored further
-	if quit_all then
-		if user_wants_to_quit() then
-			vim.cmd.quitall()
+local function quit(opts)
+	local ok, result = pcall(vim.cmd.quit, opts)
+	if not ok then
+		if result then
+			vim.notify(result)
+		else
+			vim.notify("ConfirmQuit: Error while quitting")
 		end
+	end
+end
 
-		return
+local function quitall(opts)
+	local ok, result = pcall(vim.cmd.quit, opts)
+	if not ok then
+		if result then
+			vim.notify(result)
+		else
+			vim.notify("ConfirmQuit: Error while quitting")
+		end
+	end
+end
+
+function M.confirm_quit(opts)
+	if opts.bang == true then
+		quit({ bang = true })
 	end
 
+	local is_last_tab_page = vim.fn.tabpagenr("$") == 1
+
 	if not is_last_window() then
-		vim.cmd.quit()
+		quit()
 		return
 	end
 	if not is_last_tab_page then
-		vim.cmd.quit()
+		quit()
 		return
 	end
 
 	if user_wants_to_quit() then
-		vim.cmd.quit()
+		quit()
+	end
+end
+
+function M.confirm_quit_all(opts)
+	if opts.bang == true then
+		quitall({ bang = true })
+	end
+	if user_wants_to_quit() then
+		quitall()
 	end
 end
 
@@ -53,13 +78,13 @@ local function setup_cmdline_quit()
 		vim.cmd([[ cnoreabbrev qq quit ]])
 	end
 
-	vim.api.nvim_create_user_command("ConfirmQuit", function()
-		require("confirm-quit").confirm_quit()
-	end, { force = true })
+	vim.api.nvim_create_user_command("ConfirmQuit", function(opts)
+		require("confirm-quit").confirm_quit(opts)
+	end, { force = true, bang = true })
 
-	vim.api.nvim_create_user_command("ConfirmQuitAll", function()
-		require("confirm-quit").confirm_quit(true)
-	end, { force = true })
+	vim.api.nvim_create_user_command("ConfirmQuitAll", function(opts)
+		require("confirm-quit").confirm_quit_all(opts)
+	end, { force = true, bang = true })
 end
 
 function M.setup(user_conf)
