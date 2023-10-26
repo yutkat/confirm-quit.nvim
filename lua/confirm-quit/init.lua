@@ -32,7 +32,7 @@ local function quit(opts)
 end
 
 local function quitall(opts)
-	local ok, result = pcall(vim.cmd.quit, opts)
+	local ok, result = pcall(vim.cmd.quitall, opts)
 	if not ok then
 		if result then
 			vim.notify(result)
