@@ -54,7 +54,11 @@ local function quitall(opts)
 	pcall_panic(vim.cmd.quitall, { bang = opts.bang, mods = { silent = true } })
 end
 
+local confirm_quit_default_opts = { bang = false }
+
 function M.confirm_quit(opts)
+	opts = opts or confirm_quit_default_opts
+
 	local is_last_tab_page = vim.fn.tabpagenr("$") == 1
 	local is_last_viewable = is_last_window() and is_last_tab_page
 	local should_quit = opts.bang                                  -- Force-quit without prompting
@@ -68,6 +72,8 @@ function M.confirm_quit(opts)
 end
 
 function M.confirm_quit_all(opts)
+	opts = opts or confirm_quit_default_opts
+
 	local should_quit = opts.bang                                           -- Force-quit without prompting
 	                    or (is_any_buffer_modified() and not vim.o.confirm) -- or: Unsaved changes. Try quit to print error
 	                    or prompt_user_to_quit()                            -- or: Prompt to quit
