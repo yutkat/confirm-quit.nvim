@@ -6,11 +6,19 @@ This plugin will give you a confirmation message when you close the last window.
 
 ## Installation
 
-```lua
--- Lazy
-{ "yutkat/confirm-quit.nvim", event = "CmdlineEnter", config = true },
+### Lazy
 
--- Packer
+```lua
+{
+  "yutkat/confirm-quit.nvim",
+  event = "CmdlineEnter",
+  opts = {},
+}
+```
+
+### Packer
+
+```lua
 use {
   "yutkat/confirm-quit.nvim",
   event = "CmdlineEnter",
@@ -18,12 +26,42 @@ use {
 }
 ```
 
-## Keymaps
+## Default options
 
 ```lua
--- :q
-vim.keymap.set("n", "<leader>q", require "confirm-quit".confirm_quit)
+{
+  overwrite_q_command = true, -- Replaces :q and :qa with :ConfirmQuit and :ConfirmQuitAll
+}
+```
 
--- :qa
-vim.keymap.set("n", "<leader>Q", function() require "confirm-quit".confirm_quit(true) end)
+## Commands
+
+You do not need to use those commands directly. `:q` and `:qa` are aliases to `:ConfirmQuit` and `:ConfirmQuitAll` if you didn't change the default config.
+
+I also recommend you set `vim.opt.confirm = true` to get prompted if you want to save all the unsaved changes.
+
+```vim
+ConfirmQuit " Same as :q, unless it's the last window, in which case it prompts you before taking any action.
+ConfirmQuitAll " Similar to :ConfirmQuit. Will always prompt you to quit 
+
+ConfirmQuit! " An alias to :q!
+ConfirmQuitAll! " An alias to :qa!
+```
+
+## Lua interface
+
+```lua
+require "confirm-quit".confirm_quit()     -- :ConfirmQuit
+require "confirm-quit".confirm_quit_all() -- :ConfirmQuitAll
+
+require "confirm-quit".confirm_quit { bang = true }     -- ConfirmQuit!
+require "confirm-quit".confirm_quit_all { bang = true } -- ConfirmQuitAll!
+```
+
+## Keymaps
+
+Here's an example of how you'd set up keymaps:
+```lua
+vim.keymap.set("n", "<leader>q", require "confirm-quit".confirm_quit)
+vim.keymap.set("n", "<leader>Q", require "confirm-quit".confirm_quit_all)
 ```
