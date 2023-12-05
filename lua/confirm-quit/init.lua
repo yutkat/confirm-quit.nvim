@@ -102,6 +102,7 @@ local function setup_abbreviations()
 		endfunction
 
 		cnoreabbrev <expr> q <SID>solely_in_cmd('q') ? 'ConfirmQuit' : 'q'
+		cnoreabbrev <expr> qa <SID>solely_in_cmd('qa') ? 'ConfirmQuitAll' : 'qa'
 		cnoreabbrev <expr> qq <SID>solely_in_cmd('qq') ? 'quit' : 'qq'
 	]]
 end
