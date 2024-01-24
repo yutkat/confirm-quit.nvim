@@ -2,6 +2,7 @@ local M = {}
 
 local options = {
 	overwrite_q_command = true,
+ 	quit_message = "Do you want to quit?",
 }
 
 local GENERIC_ERROR_MESSAGE = "ConfirmQuit: Error while quitting"
@@ -35,7 +36,7 @@ local function is_last_window()
 end
 
 local function prompt_user_to_quit()
-	return vim.fn.confirm("Do you want to quit?", "&Yes\n&No", 2, "Question") == 1
+	return vim.fn.confirm(options.quit_message, "&Yes\n&No", 2, "Question") == 1
 end
 
 --- A wrapper for pcall that just prints an error in case of failure
