@@ -31,6 +31,7 @@ use {
 ```lua
 {
   overwrite_q_command = true, -- Replaces :q and :qa with :ConfirmQuit and :ConfirmQuitAll
+  quit_message = 'Do you want to quit?', -- Message to show when quitting, can be a function returning a string
 }
 ```
 
